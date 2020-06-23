@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a8246203-9bd8-4d61-b74c-5463134e27d8" >
+		<http:listener-connection host="0.0.0.0" port="${httpListener.port}" />
+	</http:listener-config>
+	<os:object-store name="Object_store1" doc:name="Object store" doc:id="db3a6201-6970-4504-ad29-31b9411873f3" />
+	<os:object-store name="Object_store2" doc:name="Object store" doc:id="ddbb00b9-2453-4551-82c6-816dd20983c1" />
+	<os:object-store name="Object_store3" doc:name="Object store" doc:id="4a120211-0664-418f-b7fa-4cea3350d92a" />
+	<configuration-properties doc:name="Configuration properties" doc:id="fcdba3a5-b101-4f5a-a86e-49f4271d6d48" file="config.yaml" />
+	<flow name="objectstoreFlow" doc:id="4b700114-5ad0-4888-84e9-1f2948c5fed6" initialState="stopped">
+		<http:listener doc:name="Listener" doc:id="06ee0b37-42fe-4c21-9c23-1753e84effee" config-ref="HTTP_Listener_config" path="${httpListener.path}"/>
+		<set-payload value='"Hello"' doc:name="Hello Payload" doc:id="a0a05be2-5b92-4d7d-8b57-759fcea17db0" />
+		<os:store doc:id="baa3698d-7702-441c-8136-487a911d28a7" key="key1" objectStore="Object_store1"/>
+		<set-payload value='"World"' doc:name="World Payload" doc:id="450f63cb-b0af-4926-958d-8e3742d9ac64" />
+		<os:store doc:name="Store" doc:id="77d697a6-e96c-44c2-b5af-e17e38080f9f" key="key2" objectStore="Object_store2"/>
+		<set-payload value='"Hi"' doc:name="Hi Payload" doc:id="942d944f-733a-4589-8b1b-21f9872ea3d9" />
+		<os:store doc:name="Store" doc:id="816b906d-f5b3-4b82-ae35-e2debf671752" objectStore="Object_store3" key="key3"/>
+		<flow-ref doc:name="ToCheckAvailableKey" doc:id="d9ebb5a9-979b-4578-9d68-ffc42efba3b0" name="ToCheckAvailableKey"/>
+		<flow-ref doc:name="ToRemoveKey" doc:id="6e238ab1-c789-4eaf-8f7a-2a95af7e8ac8" name="ToRemoveKey"/>
+		<flow-ref doc:name="ToRetrieve_Partcular_Key:Valuepair" doc:id="a613aeb3-48b6-441e-827b-7ea8c7327194" name="ToRetrieve_Partcular_Key:Valuepair"/>
+		<flow-ref doc:name="ToRetrieve_AllKey:Value" doc:id="6acb0552-fc16-4f3a-bd8c-65c65b7b21c0" name="ToRetrieve_AllKey:Value"/>
+		<flow-ref doc:name="ToRetrieveAllKeys" doc:id="bc25b10b-40ba-43f3-9a03-510b7d535fd2" name="ToRetrieveAllKeys"/>
+		<logger level="INFO" doc:name="Logger" doc:id="81150681-bbd1-412b-83a8-162398a32bb5" message="#[payload]"/>
+	</flow>
+	<flow name="ToCheckAvailableKey" doc:id="70f47ee1-01b9-4d8c-a2d9-b6f56f469488" >
+		<os:contains doc:name="Contains" doc:id="577b0c85-5bb9-491a-aacb-6ccbcd804e31" key="key2" objectStore="Object_store2"/>
+	</flow>
+	<flow name="ToRemoveKey" doc:id="83abfd3e-2aee-4cd2-8901-635f6aaa909e" >
+		<os:remove doc:name="Remove" doc:id="30f79eb4-70f3-4e0a-97c3-1f69fe388981" key="key3" objectStore="Object_store3"/>
+	</flow>
+	<flow name="ToClearAllKeys" doc:id="8675bdf9-57c0-4d8f-84b8-ee55e8853e67" initialState="stopped">
+		<os:clear doc:name="Clear" doc:id="b262ff43-bbf6-4401-ac71-186efb50d175" objectStore="Object_store2"/>
+	</flow>
+	<flow name="ToRetrieve_Partcular_Key:Valuepair" doc:id="497dedcb-ee97-4dae-a300-05960909492e" >
+		<os:retrieve doc:name="Retrieve" doc:id="df71f5ac-fa14-4ca5-994c-8d4dddc15e92" key="key" objectStore="Object_store1"/>
+	</flow>
+	<flow name="ToRetrieve_AllKey:Value" doc:id="a8060ea3-6cbb-4173-b255-5d39f4f9d177" >
+		<os:retrieve-all doc:name="Retrieve all" doc:id="2bf80136-a691-4a6a-846a-d388ca9005b8" objectStore="Object_store1"/>
+	</flow>
+	<flow name="ToRetrieveAllKeys" doc:id="44b8e160-3f83-4ac3-b6aa-bc447b5f9294" >
+		<os:retrieve-all-keys doc:name="Retrieve all keys" doc:id="db32149d-3751-479a-8d94-c938b9e351e6" objectStore="Object_store1"/>
+	</flow>
+</mule>

@@ -1,0 +1,3 @@
+httpListener:
+  port: "8081"
+  path: "testObjectstore"
